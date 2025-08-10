@@ -1,3 +1,7 @@
+//Tire esta linha e coloque sua apikey
+const { api_key } = require('../api')
+
+
 module.exports = async function reelsdl(client, info, enviar, enviarVd2, reagir, fetchJson, texto_sem_cmd) {
   
   try {
@@ -9,7 +13,7 @@ module.exports = async function reelsdl(client, info, enviar, enviarVd2, reagir,
 await reagir("✨️")
 await enviar("Só um momento...")
 
-const api_inst = await fetchJson(`https://darkstars-api.dscp.shop/api/download/instagramV2?url=${texto_sem_cmd}&apikey=dark_key:3DSJ6YX7`)
+const api_inst = await fetchJson(`https://darkstars-api.dscp.shop/api/download/instagramV2?url=${texto_sem_cmd}&apikey=${api_key}`)
 
 
 let l_insta = `*Yuki Categoria instagram*

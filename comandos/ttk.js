@@ -1,8 +1,12 @@
+//TIRE ESSA LINHA E COLE SUA API KEY OU SUA API!!!
+const { api_key } = require('../api')
+
+
 module.exports = async function tiktokdl(fetchJson, texto_sem_cmd, enviarAd, enviar, client, from, reagir, info) {
   
   if (!texto_sem_cmd) return enviar(`Perdão mais sem o link Não consigo baixar💔`)
 try {
-api = await fetchJson(`https://darkstars-api.dscp.shop/api/download/tiktokV2?url=${texto_sem_cmd}&apikey=dark_key:3DSJ6YX7&username=Speed`)
+api = await fetchJson(`https://darkstars-api.dscp.shop/api/download/tiktokV2?url=${texto_sem_cmd}&apikey=${api_key}&username=sla`)
 Tyexto = `*Yuki😸*
 
 🌷⃟ *Título*: ${api.resultado.title}

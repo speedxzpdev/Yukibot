@@ -43,6 +43,10 @@ const exit = require('./comandos/exit')
 //importaçoes de menus
 const { menup } = require('./comandos/menup')
 
+//TIRE ESSA LINHA E COLE SUA API KEY OU SUA API!!!
+const { api_key } = require('./api')
+
+
 //arquivos em json ou db pra fazer ranks e coisas basicas
 const respostas_prontas = JSON.parse(fs.readFileSync('./database/respostas_prontas.json', 'utf8'));
 
@@ -536,7 +540,7 @@ await reagir("👀")
 await enviar(respostas_prontas.espera_basica)
 const pesquisa = encodeURIComponent(texto_sem_cmd);
 
-const api_music = await fetchJson(`https://darkstars-api.dscp.shop/api/download/youtube-audiov4?Nome_Ou_Url=${pesquisa}&apikey=dark_key:3DSJ6YX7`)
+const api_music = await fetchJson(`https://darkstars-api.dscp.shop/api/download/youtube-audiov4?Nome_Ou_Url=${pesquisa}&apikey=${api_key}`)
 
 const capa = `❒*Categoria Youtube/Spotify*
 🎶⃟ *título*:${api_music.Resultado.Nome}
@@ -567,7 +571,7 @@ if (!search_anime) {return await enviar("Informe um nome de algum anime!")}
 
 await reagir("🔥")
 await enviar("Só um mometinho...")
-const api_anime = await fetchJson(`https://darkstars-api.dscp.shop/api/anime/infoAnime?nome=${search_anime}&apikey=dark_key:3DSJ6YX7`)
+const api_anime = await fetchJson(`https://darkstars-api.dscp.shop/api/anime/infoAnime?nome=${search_anime}&apikey=${api_key}`)
 
 const animetext = `*Informações sobre: ${texto_sem_cmd}*
 
@@ -599,7 +603,7 @@ if (!p_gpt) { return await enviar(`Preciso saber oque deseja pergunta, Exemplo: 
 
 await reagir("👀")
 await enviar("Só um momentinho!")
-const api_gpt = await fetchJson(`https://darkstars-api.dscp.shop/api/gpt?texto=oi,${p_gpt}&apikey=dark_key:3DSJ6YX7`)
+const api_gpt = await fetchJson(`https://darkstars-api.dscp.shop/api/gpt?texto=oi,${p_gpt}&apikey=${api_key}`)
 
 const R_gpt = `*Resposta Do chatgpt*:
 

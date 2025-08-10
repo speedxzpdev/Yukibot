@@ -1,0 +1,28 @@
+module.exports = async function tiktokdl(fetchJson, texto_sem_cmd, enviarAd, enviar, client, from, reagir, info) {
+  
+  if (!texto_sem_cmd) return enviar(`Perdão mais sem o link Não consigo baixar💔`)
+try {
+api = await fetchJson(`https://darkstars-api.dscp.shop/api/download/tiktokV2?url=${texto_sem_cmd}&apikey=dark_key:3DSJ6YX7&username=Speed`)
+Tyexto = `*Yuki😸*
+
+🌷⃟ *Título*: ${api.resultado.title}
+❤️⃟ *Gostos*:${api.resultado.like}
+💬⃟ *Comentarios*: ${api.resultado.comentario}
+👀⃟ *Visualização*: ${api.resultado.views}
+📎⃟ *Link Vídeo*: ${api.resultado.link}
+🎶⃟ *Link Musica*: ${api.resultado.musica}
+💤⃟ *Hora do post*: ${api.resultado.hora_de_criacao}
+😻⃟ *Donwload*: ${api.resultado.sem_marcadagua} `
+await reagir("😼")
+await client.sendMessage(from, {video: {url: api.resultado.sem_marcadagua}, caption: Tyexto, mimetype: "video/mp4"}, {quoted: info})
+await enviar("Sabia que oque melhora um video é o áudio? Então não poderia faltar🫠")
+await enviarAd(api.resultado.musica)
+} catch (erro) {
+await reagir("💔")
+await enviar("Ocorreu um erro na api")
+console.error("Deu erro aqui: " + erro)
+}
+  
+}
+
+

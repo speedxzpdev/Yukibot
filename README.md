@@ -60,6 +60,23 @@ await enviarImg2(link, "oiiii");
 Envia um áudio. Modo de uso:
 await enviarAd(link);
 ``
+### **enviarVd**
+``
+Envia um vídeo simples. Modo de uso: await enviarVd(link)
+``
+### **enviarVd2**
+``
+Envia um video com legenda. Modo de uso: await enviarVd2(link, "oiiii")
+``
+### **sender**
+``
+Pega o autor da mensagem
+``
+### **mention**
+``
+Pega tanto menções com @ e com respostas.
+``
+
 ## Conclusão
 
 Isso é o básico! Há muitas outras funções disponíveis, e você poderá descobrir como usá-las ao explorar o código.

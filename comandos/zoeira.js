@@ -1,6 +1,8 @@
 //switch case para comando de brincadeira Atençao!!! Use return true em qualquer if e tambem use como brake para não dar erro e nem criar um loop doido ai
+const fs = require('fs')
+const path = require('path')
 
-module.exports = async function cmd_zueira(client, info, comando, enviar, enviarImg2, enviarAd, enviarGif, choice_string, prefixo_bot, mention, autor, reagir,) {
+module.exports = async function cmd_zueira(client, info, comando, enviar, enviarImg2, enviarAd, enviarGif, choice_string, prefixo_bot, mention, autor, reagir, texto_sem_cmd) {
     
 const { bot_number } = require('../config')
 
@@ -101,6 +103,36 @@ mentions: [sender, mention]
 }, { quoted: info })
 
 return true;
+
+//Prefiro nao documentar sobre...
+case 'waifu':
+  await reagir("🌹")
+  
+  const waifu_arq = path.resolve(__dirname, '../database/waifu.json')
+  
+  const waifu_list = JSON.parse(fs.readFileSync(waifu_arq, 'utf-8'))
+  
+  const w_aleatoria = choice_string(waifu_list)
+  const chance_waifu = Math.floor(Math.random(0) * (100))
+  
+  enviarImg2(w_aleatoria, `*Aqui está sua waifu!*\nChance de casamento... ${chance_waifu}%`)
+
+return true
+
+case 'chance':
+  if (!texto_sem_cmd) {
+    await enviar('Hum... Sou adivinha não! Exemplo: "/chance do lobinho conseguir comida"')
+    return true
+  }
+
+const chanc_porc = Math.floor(Math.random() * 100)
+
+await reagir("🔥")
+await enviar(`A chance ${texto_sem_cmd} é de ${chanc_porc}%`)
+
+return true
+
+
 
 
 

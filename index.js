@@ -359,7 +359,7 @@ const inicio = Date.now();
 
 const fim = Date.now();
 
-await reagir("⚡")
+await enviar("Calculando tempo de resposta...")
 
 const ping = fim - inicio
 
@@ -368,10 +368,10 @@ const info_ping = `*Informações Sobre onde Sou executada💜*
 *👾Sistema operacional*:${os_name}
 *📲Plataforma*:${plat_name}
 *⚙️Memoria ram*:${mem_gb}GB
-*💤Tempo de att*:${hr_process}hr${min_process}min${seg_process}seg
-*⚡tempo de resposta*:${ping}ms`
+*⚡tempo de resposta*:${ping}ms
+*Repositorio da bot*: https://github.com/speedxzpdev/Yukibot`
 
-enviarImg2("https://files.catbox.moe/hsqocn.jpg", info_ping)
+await enviarImg2("https://files.catbox.moe/hsqocn.jpg", info_ping)
 
 break
 
@@ -700,7 +700,7 @@ break
 //Caso um comando seja invalido chama essa condição
 default:
 //chama a outra switch case de comando zoeiros
-const cmd_tratado = await cmd_zueira(client, info, comando, enviar, enviarImg2, enviarGif, enviarAd, choice_string, prefixo_bot, mention, autor, reagir) 
+const cmd_tratado = await cmd_zueira(client, info, comando, enviar, enviarImg2, enviarGif, enviarAd, choice_string, prefixo_bot, mention, autor, reagir, texto_sem_cmd) 
 
 if (isCmd && !cmd_tratado) {reagir("😖")
 

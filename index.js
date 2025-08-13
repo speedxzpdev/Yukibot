@@ -35,7 +35,7 @@ const { bot_number } = require('./config')
 const stickerCommand = require('./comandos/sticker')
 const cmd_zueira = require('./comandos/zoeira')
 const { amiguss } = require('./config')
-
+const postdl = require('./comandos/i_post')
 const toimg = require('./comandos/toimg')
 
 const exit = require('./comandos/exit')
@@ -209,7 +209,11 @@ var texto_exato = (type === 'conversation') ? info.message.conversation : (type 
 //pega tudo que for escrito incluindo prefixo e comando!
 const texto = texto_exato.slice(0).trim().split(/ +/).shift().toLowerCase()
 //mesma coisa porem aqui ele corta tudo que for escrito dps do prefixo
-const texto_sem_cmd = texto_exato.trim().slice(body.indexOf(" ") + 1)
+const partes = texto_exato.trim().split(/ +/) // divide por espaços
+const comando_letra = partes.shift().toLowerCase() // remove o prefixo+comando
+const texto_sem_cmd = partes.length > 0 ? partes.join(" ") : "" // junta o resto ou vazio
+
+
 //SIMULA ESCRITA
 async function escrever (texto) {
 await client.sendPresenceUpdate('composing', from) 
@@ -332,16 +336,27 @@ await enviar("Se quiser continuar usando no pv Pode falar com meu dono.")
 }
 //detecta o link de um video do tiktok
 if (body.startsWith("https://vm.tiktok.com")) {
+await reagir("⚡")
 await enviar("Hum... Acabei de Verificar esse link! Já estou baixando....")
-await tiktokdl(fetchJson, texto_sem_cmd, enviarAd, enviar, client, from, reagir, info)
+await tiktokdl(fetchJson, texto_sem_cmd, enviarAd, enviar, client, from, reagir, info, texto_exato)
   return
 }
 //detecta insta
 if (body.startsWith("https://www.instagram.com/reel")) {
   await enviar("Acabei de detectar esse reels! Só um momentinho...")
-  reelsdl(client, info, enviar, enviarVd2, reagir, fetchJson, texto_sem_cmd)
+  reelsdl(client, info, enviar, enviarVd2, reagir, fetchJson, texto_sem_cmd, texto_exato)
 return
 }
+//detecta fotos, post do instagram
+if (body.startsWith('https://www.instagram.com/p')) {
+  await enviar("Acabei de detectar esse post! A Yuki está baixando...")
+  
+  postdl(client, info, enviar, enviarImg2, reagir, fetchJson, texto_sem_cmd, texto_exato)
+  
+  return
+}
+  
+  
   
 //alguns eventos basicos!
 
@@ -519,14 +534,45 @@ if (isOwner(mention)) {
 //Aqui eu fiz num comando diferente chamado tiktok pra funcionar deve mudar a api ou colocar sua chave key da dark stars no arquivo tiktok
 case 'ttk':
 case 'tiktok':
+try {
+
 if (!texto_sem_cmd) {
-  await enviar("Eu preciso do link para baixar!")
-break
-  }
+  await enviar("Preciso do link! Use: /ttk `link`")
+  return
+}
 
 await enviar(respostas_prontas.espera_basica)
 
-tiktokdl(fetchJson, texto_sem_cmd, enviarAd, enviar, client, from, reagir, info)
+await reagir("⚡")
+
+api = await fetchJson(`https://darkstars-api.dscp.shop/api/download/tiktokV2?url=${texto_sem_cmd}&apikey=${api_key}&username=sla`)
+Tyexto = `*Yuki Donwload!*
+
+*Título*: ${api.resultado.title}
+
+*Gostos*:${api.resultado.like}
+
+*Comentarios*: ${api.resultado.comentario}
+
+*Visualização*: ${api.resultado.views}
+
+*Link Vídeo*: ${api.resultado.link}
+
+*Link Musica*: ${api.resultado.musica}
+
+*Hora do post*: ${api.resultado.hora_de_criacao}
+
+*Donwload*: ${api.resultado.sem_marcadagua} `
+await reagir("😼")
+await client.sendMessage(from, {video: {url: api.resultado.sem_marcadagua}, caption: Tyexto, mimetype: "video/mp4"}, {quoted: info})
+await enviar("Sabia que oque melhora um video é o áudio? Então não poderia faltar🫠")
+await enviarAd(api.resultado.musica)
+} catch (erro) {
+await reagir("💔")
+await enviar("Ocorreu um erro na api")
+console.error("Deu erro aqui: " + erro)
+}
+ 
 break
 
 //aqui ele toca uma musica mude a api ou a key!!!
@@ -598,19 +644,17 @@ case 'gpt':
 
 try {
 const p_gpt = encodeURIComponent(texto_sem_cmd)
-if (!p_gpt) { return await enviar(`Preciso saber oque deseja pergunta, Exemplo: ${prefix}chatgpt oi?`)}
+if (!texto_sem_cmd) { return await enviar(`Preciso saber oque deseja pergunta, Exemplo: ${prefix}chatgpt oi?`)}
 
 
 await reagir("👀")
 await enviar("Só um momentinho!")
 const api_gpt = await fetchJson(`https://darkstars-api.dscp.shop/api/gpt?texto=oi,${p_gpt}&apikey=${api_key}`)
 
-const R_gpt = `*Resposta Do chatgpt*:
-
-${api_gpt.resultado}`
+const R_gpt = `${api_gpt.resultado}`
 
 await reagir("😸")
-await enviarImg2("https://files.catbox.moe/ig5y4d.jpg", R_gpt)
+await enviar(R_gpt)
 }
 
 catch(gpt_err) {console.gpt_err("Ocorreu um erro aqui", gpt_err) 
@@ -621,13 +665,69 @@ break
 //aqui baixa videos do insta por favo mude a api ou key!!
 case 'instagram':
 case 'insta':
-await enviar(respostas_prontas.espera_basica)
-reelsdl(client, info, enviar, enviarVd2, reagir, fetchJson, texto_sem_cmd)
+try {
+ 
+ if (!texto_sem_cmd) {
+   await enviar("Preciso do link!")
+   return
+ }
   
+await reagir("✨️")
+await enviar("Só um momento...")
+
+const api_inst = await fetchJson(`https://darkstars-api.dscp.shop/api/download/instagramV2?url=${texto_sem_cmd}&apikey=${api_key}`)
+
+
+
+
+const meta = api_inst.resultado.metadata
+
+let l_insta = `*Yuki Download*
+
+*Username*:${meta.username}
+*Titulo*:${meta.caption}
+*Likes*:${meta.like}
+*Comentários*:${meta.comment}
+`
+
+await reagir("😼")
+await enviarVd2(api_inst.resultado.url, l_insta)
+
+
+}
+catch(i_err) {
+  console.error("Ocorreu um erro aqui!", i_err)
+  await reagir("💔")
+  await enviar("Ocorreu um erro na api💔")
+}
+
 break
 
+case 'gemini':
+try  {
+
+const gemini_pergunta = encodeURIComponent(texto_sem_cmd)
+
+if (!texto_sem_cmd) {
+  await enviar('Oque deseja perguntar ao gemini? Exemplo: "/gemini A yuki é bonita?" ')
+  return
+}
+
+await reagir("👀")
+await enviar("Só um momento... Estou buscando sua resposta!")
 
 
+const gemini_api = await fetchJson(`https://darkstars-api.dscp.shop/api/geminiv2?texto=${gemini_pergunta}&apikey=${api_key}`)
+
+await reagir("✨️")
+await enviar(gemini_api.resposta)
+}
+catch(err_gem) {
+  console.error("Ocorreu um erro no comando gemini", err_gem)
+  await enviar("Ocorreu um erro na resposta!")
+}
+
+break
 //COMANDOS ADIMINISTRATIVOS
 //Remove a propria bot do grupo. Só donos conseguem usar!
 case 'kill':
@@ -635,9 +735,68 @@ exit(info, from, reagir, enviar, donos, client)
 break
 
 
+case 'pinterest':
+case 'pin':
+try {
+if (!texto_sem_cmd) {
+  await enviar('Qual imagem deseja buscar? Exemplo: "/pinterest Yuki suou" ')
+  return
+}
+
+const img_pin = encodeURIComponent(texto_sem_cmd)
+
+await reagir("💜")
+await enviar("Só um momento. A yuki está buscando sua imagem!")
+
+const pin_api = `https://darkstars-api.dscp.shop/api/pesquisa/pinterest?text=${img_pin}&apikey=${api_key}`
+
+await reagir("✨️")
+await enviarImg2(pin_api, "Aqui está sua pesquisa!")
+
+}
+catch(err_pin) {
+  console.error("Ocorreu um erro no comando pinterest", err_pin)
+  await enviar("Ocorreu um errinho aqui! Jaja nois resolve fi!")
+}
+
+break
+
+case 'wikipedia':
+try {
+if (!texto_sem_cmd) {
+ await enviar('Oque deseja pesquisar? Exemplo: "/wikipedia html" ')
+  return
+}
+
+await reagir("💜")
+await enviar("Só um momento. A yuki está pesquisando!")
+
+
+const search_wiki = encodeURIComponent(texto_sem_cmd)
+
+const api_wiki = await fetchJson(`https://darkstars-api.dscp.shop/api/pesquisa/wikipedia?query=${search_wiki}&apikey=${api_key}`)
+
+await reagir("✨️")
+await enviar(api_wiki.resultado.pesquisaText)
+
+}
+
+catch(err_wiki) {
+  console.error("Ocorreu um erro no comando wikipedia", err_wiki)
+  await enviar("Ocorreu um erro🥺")
+}
+
+break
+
 
 //Comando normal de totag mais com alguns bugs e imperfeicoes
 case 'totag':
+if (!texto_sem_cmd) {
+  enviar('Oque deseja avisar? Exemplo: "/totag a yuki é linda!"')
+  return
+}
+
+
 if (!permAdmin) {
   await reagir("😔")
   await enviar("Quem diria qualquer estranho Poder me usar livremente sem ter adm😅")
@@ -645,7 +804,7 @@ if (!permAdmin) {
 }
   
 await reagir("🩷")
-await client.sendMessage(from, {text: `ꦽꦼ̷❄️•ˑ˒ *𝐀𝐯𝐢𝐬𝐨 𝐝𝐨 𝐚𝐝𝐦:${autor}*\n\n${texto_sem_cmd}`, mentions:marcar_todos}, {quoted:info})
+await client.sendMessage(from, {text: `*Aviso do:${autor}*\n\n${texto_sem_cmd}`, mentions:marcar_todos}, {quoted:info})
 
 break
 //Promover uma pessoa

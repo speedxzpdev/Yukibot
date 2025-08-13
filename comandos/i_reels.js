@@ -2,26 +2,26 @@
 const { api_key } = require('../api')
 
 
-module.exports = async function reelsdl(client, info, enviar, enviarVd2, reagir, fetchJson, texto_sem_cmd) {
+module.exports = async function reelsdl(client, info, enviar, enviarVd2, reagir, fetchJson, texto_sem_cmd, texto_exato) {
   
   try {
-  if (!texto_sem_cmd) {
-    await enviar("Preciso do link do que deseja baixar!")
-  return
-  }
-
+  
 await reagir("✨️")
 await enviar("Só um momento...")
 
-const api_inst = await fetchJson(`https://darkstars-api.dscp.shop/api/download/instagramV2?url=${texto_sem_cmd}&apikey=${api_key}`)
+const api_inst = await fetchJson(`https://darkstars-api.dscp.shop/api/download/instagramV2?url=${texto_exato}&apikey=${api_key}`)
 
 
-let l_insta = `*Yuki Categoria instagram*
 
-❒ *Username*:${api_inst.resultado.metadata.username}
-❒ *Titulo*:${api_inst.resultado.metadata.caption}
-❒ *Likes*:${api_inst.resultado.metadata.like}
-❒ *Comentários*:${api_inst.resultado.metadata.comment}
+
+const meta = api_inst.resultado.metadata
+
+let l_insta = `*Yuki Download*
+
+*Username*:${meta.username}
+*Titulo*:${meta.caption}
+*Likes*:${meta.like}
+*Comentários*:${meta.comment}
 `
 
 await reagir("😼")

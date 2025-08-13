@@ -1,6 +1,6 @@
 //Só pra n usarem minha api key
 
-const api_key = "dark_key:3DSJ6YX7"
+const api_key = "Sua apikey"
 
 
 
